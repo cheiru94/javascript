@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- 1. form 태크 - #start-screen -->
+  <form id="start-screen">
+      <input id="name-input" placeholder="주인공 이름을 입력하세요!" />
+      <button id="start">시작</button>
+  </form>
+  <!-- 2. SCREEN으로 들어갈 내용들 입력 -->
+  <div id="screen">
+      <!-- 2.1 영웅 셋 -->
+      <div id="hero-stat">
+        <span id="hero-name"></span>
+        <span id="hero-level"></span>
+        <span id="hero-hp"></span>
+        <span id="hero-xp"></span>
+        <span id="hero-att"></span>
+      </div>
+      <!-- 2.2 게임 메뉴 - #game-menu -->
+      <form id="game-menu" style="display: none;">
+        <div id="menu-1">1.모험</div>
+        <div id="menu-2">2.휴식</div>
+        <div id="menu-3">3.종료</div>
+        <input id="menu-input"/>
+        <button id="menu-button">입력</button>
+      </form>
+      <!-- 2.2 전투 메뉴  - #battle-menu -->
+      <form id="battle-menu" style="display: none;">
+        <div id="battle-1">1.공격</div>
+        <div id="battle-2">2.회복</div>
+        <div id="battle-3">3.도망</div>
+        <input id="battle-input" />
+        <button id="battle-button">입력</button>
+      </form>
+      <!-- 2.3 메세지 -->
+      <div id="message"></div>
+      <!-- 2.4 몬스터 스텟 -->
+      <div id="monster-stat">
+        <span id="monster-name"></span>
+        <span id="monster-hp"></span>
+        <span id="monster-att"></span>
+      </div>
+  </div>
+
+  <script>
+    const $startScreen = document.querySelector('#start-screen');
+    const $gameMenu = document.querySelector('#game-menu');
+    const $battleMenu = document.querySelector('#battle-menu');
+    const $heroName = document.querySelector('#hero-name');
+    const $heroLevel = document.querySelector('#hero-level');
+    const $heroHp = document.querySelector('#hero-hp');
+    const $heroXp = document.querySelector('#hero-xp');
+    const $heroAtt = document.querySelector('#hero-att');
+    
+    const $message = document.querySelector('#message');
+    const $monsterName = document.querySelector('#monster-name');
+    const $monsterHp = document.querySelector('#monster-hp');
+    const $monsterAtt = document.querySelector('#monster-att');
+    
+
+  
+    
+
+    $startScreen.addEventListener('submit',(event)=>{
+      event.preventDefault(); // ⭐⭐⭐⭐⭐전송해서 새로 고침 금지 ⭐⭐⭐⭐⭐
+      // const name = event.target.childNodes[0].value;  -> 안되더라
+      // console.log(event.target.childNodes[0]); 
+      // console.log(event.target.childNodes[0].value); 
+      // console.log(event.target)
+
+      const name = event.target['name-input'].value;  // ⭐ 폼테그의 엘리먼트의 자식의 요소를 연관배열로 처리가능⭐⭐⭐⭐⭐
+      // console.log(event.target['start'].textContent);
+
+      // event.target : form 태크 엘리먼트 
+      $startScreen.style.display = 'none'; // $startScreen 보이지 않게 
+      $gameMenu.style.display='block'; // 보이기
+      $heroName.textContent =  hero.name =  name; //  젤 오른쪽에소 왼쪽으로 순서대로 대입이 된다., 
+      console.log(hero.name)
+      console.log(this);
+      $heroLevel.textContent = `${hero.lev} Lev || `;
+      $heroHp.textContent = `헬쓰 : ${hero.hp} / ${hero.maxHp}`;
+      $heroXp.textContent = `경험치 : ${hero.xp} / ${15*hero.lev}`;
+      $heroAtt.textContent = `공격력 : ${hero.att}`;
+      // hero.name = name;  93번 라인 처럼 한번에 나타낼 수 있다, 연산자 우선 순위 사용해서 
+
+    })
+
+    const hero = {
+      name:'',
+      lev:1,
+      maxHp:100,
+      hp:100,
+      xp:0,
+      att:10,
+      //  function keyword 생략 가능
+      attack(monster){  // 공격의 대상을 매개 변수로 넣는다
+        monster.hp -= this.att;  //  내 공격치 만큼 monter 데미지 입히자
+        this.hp -= monster.att; //  지도 몬스터한테 맞아서 hp 까임
+      },
+      // heal : finction (monster) 이게 원래 모양인데 현대 문법에서는 아래 처럼 표기를 한다.
+      heal(monster){
+        this.hp += 20;
+        this.hp -= monster.att;
+      }
+    };
+
+    let monster = null;
+    const monsterList = [
+      {name:'슬라임', hp:25 , att:10 , xp:10 , },
+      {name:'스켈레톤', hp:50 , att:15 , xp:20 , },
+      {name:'마왕', hp:150 , att:35 , xp:50 , }
+
+    ];
+    const getRNum = (n, m) => Math.floor( Math.random() * (m - n + 1) ) + n;
+
+    // $startScreen.addEventListener();
+    $gameMenu.addEventListener('submit', (e)=> {
+      e.preventDefault();
+      const input = e.target['menu-input'].value;  // 이렇게 사용 가능하다 
+      // const input = e.target.querySelector('#menu-input').value;
+      console.log(input);
+
+      /* 🟡 switch   -  🟡*/
+      switch(input){
+        case '1': 
+          $gameMenu.style.display = 'none';
+          $battleMenu.style.display = 'block';
+
+          //  몬스터 생성
+          monster = JSON.parse( // 깊은 복사
+            JSON.stringify(monsterList[getRNum(0,monsterList.length-1)])  // monsterList 길이 보다 한개 적어야한다
+          )
+          beak;
+        case '2':
+          beak;
+        case '3':
+          beak;
+      }
+
+
+    })
+
+    $battleMenu.addEventListener('subject', (e)=>{
+      e.preventDefault(); // 재랜더링 방지
+      const input = e.target['battle-input'].value;
+      
+      switch(input){
+        case '1' :
+           hero.attack(monster);
+          //  console.log(hero);  hero hp확인
+           monster.attack(hero);
+           $heroHp.textContent=`HP: ${hero.hp}/${hero.maxHp}`;
+           $monsterHp.textContent=`HP: ${monster.hp}/${monster.maxHp}`;
+           $message.textContent = `${hero.att}의 데미지를 주고, ${monster.att}의 데미지를 받았다네...;;`
+          break;
+        case '2' :
+
+          break;
+        case '3' :
+
+          break;
+      }
+    })
+
+  </script>
+
+</body>
+</html>

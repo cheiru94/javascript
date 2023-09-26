@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form action="" id="form">
+    <input type="text" id="input">
+    <button>확인</button>
+  </form>
+  <div id="logs">
+
+  </div>
+  <script>
+    const $input = document.querySelector('#input');
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
+/*    const numbers = [];
+     for(let n = 1; n<=9; n+=1){
+      numbers.push(n);
+    } */
+
+    // getRNum(n,m): n이상 m이하
+    const getRNum = (n,m)=> Math.floor(
+                           Math.random() *
+                           (m-n+1)
+                         )+n;  
+
+    const numbers = Array(9).fill().map((v,i)=>i+1);
+    //console.log(numbers); // numbers - [1,2,3,4,5,6,7,8,9]
+    const answer = [];
+    
+
+    for(let n=0;n<4;n+=1){
+      //const index = getRNum(0,8);  // undefined 생성가능
+      const index = getRNum(0,numbers.length-1);
+      answer.push(numbers[index]);
+      numbers.splice(index,1); // 배열에서 index위치에 1개를 삭제
+      //console.log(numbers);
+      //console.log(answer);
+    }
+
+    const sidoArr = []; // 시도한 입력값 저장
+    const checkInput = (input)=>{  // 문장열 input
+      if(input.length !==4 ){  // 길이 4개의 숫자를 문자열로 입력 안한 경우
+        return alert('똑디 못하나? 4자리 숫자로 입력해라');
+      }
+      if ((new Set(input)).size !==4){  // 4개의 숫자중에 중복된 숫자가 있는 경우
+        return alert('중복하지말란말이야!');
+      }
+      if(sidoArr.includes(input)){  // 이미 시도한 입력체크
+        return alert('정신 못차라리나? 이미 시도한거');
+      }
+      return true;
+    };
+
+    $form.addEventListener(
+      'submit',  // enter키 눌러 요청 처리 가능
+      (event)=>{
+        event.preventDefault(); // 디폴트 처리를 중지
+        // submit의 디폴트 처리: action속성의 주소로 요청을 처리하고 화면 새로고침: 화면 초기화
+        const value = $input.value;
+        $input.value='';
+        const valid = checkInput(value);
+        //console.log(valid);
+        if(!valid) return;
+        console.log(answer);
+        if(answer.join('') === value){
+          $logs.textContent = '홈런입니다.';
+          return;
+        }
+        if(sidoArr.length>10){
+          const msg = document.createTextNode(`패배! 정답: ${anwser.join('')}`);
+          $logs.appendChild(msg);
+          //$logs.textContent = `패배! 정답: ${anwser.join('')}`;
+          return;
+        }
+
+        let nOfStrike = 0;
+        let nOfBall = 0;
+
+        // 🔴🔴🔴🔴🔴🔴🔴🔴 for 문을 -> forEach로 바꿔라 , 서로 형태를 바꿔라 , 🔴시험🔴 
+
+        // 🟡 1. for 🟡
+        /* for (let i = 0;i<answer.length;i++){
+          const index = value.indexOf(answer[i]);
+          if(index>-1){  // indexOf() 못찾으면 -1 반환, 찾으면 해당하는 index번호값 반환
+            if(index===i){
+              nOfStrike++;
+            }else{
+              nOfBall++;
+            }
+          }
+        } */
+
+        // 🟡 2. forEach수정하기 🟡 
+        answer.forEach((answerValue,answerIndex)=>{  // 교과서에는 answerValue를 number로
+          const index = value.indexOf(String(answerValue));
+          // String(): 문자열 객체를 생성하는 함수
+          // Number(): 숫자객체를 생성하는 함수 
+          // Date(), Array() ... 
+          if(index>-1){  // indexOf() 못찾으면 -1 반환, 찾으면 해당하는 index번호값 반환
+            if(index===answerIndex){
+              nOfStrike++;
+            }else{
+              nOfBall++;
+            }
+          }
+        })
+        // 🚩 배열 라이브러리가 막강하기 때문에 for문 대신에 배열 라이브러리를 사용하는 것이 편리하다 🚩        
+
+
+        $logs.append(`${value}: ${nOfStrike} 스트라이크 ${nOfBall} 볼`,document.createElement('br'));
+
+        sidoArr.push(value);  // 시도횟수 1추가 
+      }
+    );
+      if (condition) {
+        
+      }
+
+
+
+  </script>
+  
+</body>
+</html>
